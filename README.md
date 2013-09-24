@@ -1,3 +1,5 @@
+![Raytraced Rust](https://raw.github.com/huonw/card-trace/master/rust.png)
+
 A Rust version of the C++ "business card" ray tracer.
 
 - original: <http://www.cs.utah.edu/~aek/code/card.cpp>
@@ -41,7 +43,3 @@ sys     0m0.500s
 ~~~
 
 These all render `Rust`.
-
-## View it
-
-![Raytraced Rust](https://raw.github.com/huonw/card-trace/master/rust.png)
