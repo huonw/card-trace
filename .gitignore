@@ -1,0 +1,5 @@
+*.ppm
+*.png
+cxx
+rust
+perf.data*
