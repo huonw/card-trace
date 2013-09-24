@@ -20,14 +20,14 @@ A Rust version of the C++ "business card" ray tracer.
 ## Compare it
 
 ~~~
-$ gcc -O3 -lm original.cpp -o cxx
+$ g++ -O3 -lm original.cpp -o cxx
 $ time ./cxx > rust.ppm
 
 real    0m17.923s
 user    0m17.900s
 sys     0m0.012s
 
-$ clang -O3 -lm original.cpp -o cxx
+$ clang++ -O3 -lm original.cpp -o cxx
 $ time ./cxx > rust.ppm
 
 real    0m13.755s
