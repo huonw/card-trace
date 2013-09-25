@@ -22,47 +22,34 @@ pub struct Vec {
     z: f32
 }
 
+#[no_mangle]
 fn V(x: f32, y: f32, z: f32) -> Vec {
     Vec { x: x, y: y, z: z }
 }
+#[no_mangle]
 fn add(v: Vec, w: Vec) -> Vec {
     V(v.x + w.x, v.y + w.y, v.z + w.z)
 }
+#[no_mangle]
 fn mul(v: Vec, scale: f32) -> Vec {
     V(v.x * scale, v.y * scale, v.z * scale)
 }
-pub fn dot(v: Vec, w: Vec) -> f32 {
+#[no_mangle]
+fn dot(v: Vec, w: Vec) -> f32 {
     v.x * w.x + v.y * w.y + v.z * w.z
 }
-
+#[no_mangle]
 fn cross(v: Vec, w: Vec) -> Vec {
     V(v.y * w.z - v.z * w.y,
       v.z * w.x - v.x * w.z,
       v.x * w.y - v.y * w.x)
 }
+#[no_mangle]
 fn normalise(v: Vec) -> Vec {
     mul(v, (1. / unsafe { sqrtf32(dot(v, v)) }))
 }
 
 static G: &'static [i32] = &[301252, 336932, 402628, 468255, 304324, 458756, 0, 0, 0];
-
-fn print(v: &[u8]) {
-    unsafe {
-        let (ptr, len): (*u8, uint) = transmute(v);
-        write(1, ptr, len);
-    }
-}
-fn index(v: &[i32], i: uint) -> i32 {
-    unsafe {
-        let (ptr, _len): (*i32, uint) = transmute(v);
-
-        *offset(ptr, i as int)
-    }
-}
-
-fn R() -> f32 {
-    unsafe { rand() as f32 / 2147483647. }
-}
 
 /*
 &[0b0000000000000000000,
@@ -76,11 +63,33 @@ fn R() -> f32 {
   0b1001001100011000100];
 */
 
+#[no_mangle]
+fn print(v: &[u8]) {
+    unsafe {
+        let (ptr, len): (*u8, uint) = transmute(v);
+        write(1, ptr, len);
+    }
+}
+#[inline(always)]
+fn index(v: &[i32], i: uint) -> i32 {
+    unsafe {
+        let (ptr, _len): (*i32, uint) = transmute(v);
+
+        *offset(ptr, i as int)
+    }
+}
+
+#[no_mangle]
+fn R() -> f32 {
+    unsafe { rand() as f32 / 2147483647. }
+}
+
+#[no_mangle]
 fn T(o: Vec, d: Vec, t: &mut f32, n: &mut Vec) -> i32 {
     *t = 1e9;
     let mut m = 0;
     let p = -o.z / d.z;
-    *n = V(0.,0.,0.);
+
     if (p > 0.01) {
         *t = p;
         *n = V(0., 0., 1.);
@@ -112,6 +121,7 @@ fn T(o: Vec, d: Vec, t: &mut f32, n: &mut Vec) -> i32 {
     m
 }
 
+#[no_mangle]
 fn S(o: Vec, d: Vec) -> Vec {
     let mut t = 0.;
     let mut n = V(0.,0.,0.);
@@ -130,7 +140,7 @@ fn S(o: Vec, d: Vec) -> Vec {
         b = 0.;
     }
 
-    let p = unsafe {powf32(dot(l,r) * (b > 0.) as f32, 99.)};
+    let p = unsafe {powf32(dot(l, r) * (b > 0.) as f32, 99.)};
     if m == 1 {
         let h_ = mul(h, 0.2);
         mul(if unsafe {ceilf32(h_.x) + ceilf32(h_.y)} as i32 & 1 == 1 {
@@ -164,9 +174,9 @@ fn main(_: int, _: **u8) -> int {
             while r >= 0 {
                 let t = add(mul(a, (R() - 0.5) * 99.), mul(b, (R() - 0.5) * 99.));
                 let dir = normalise(add(mul(t, -1.),
-                              mul(add(mul(a, (x_ + R())),
-                                  add(mul(b, (y_ + R())),
-                                      c)), 16.)));
+                                        mul(add(mul(a, (x_ + R())),
+                                                add(mul(b, (y_ + R())),
+                                                    c)), 16.)));
                 p = add(mul(S(add(V(17., 16., 8.), t), dir), 3.5), p);
 
                 r-= 1;
